@@ -125,7 +125,10 @@ func (r *Resp) ReadBulk() (Value, error) {
 
 	v.bulk = string(bulk)
 
-	r.ReadLine()
+	_, _, err = r.ReadLine()
+	if err != nil {
+		return Value{}, err
+	}
 
 	return v, nil
 }

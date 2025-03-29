@@ -14,7 +14,7 @@ func main() {
 		return
 	}
 
-	//Listen for connections
+	//Listen for connection
 	conn, err := l.Accept()
 	if err != nil {
 		fmt.Println()
