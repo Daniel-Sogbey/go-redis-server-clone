@@ -37,11 +37,11 @@ func main() {
 			return
 		}
 
-		fmt.Println(value)
+		_ = value
 
-		_, err = conn.Write([]byte("+OK\r\n"))
+		writer := NewWriter(conn)
+		err = writer.Write(Value{typ: "string", str: "OK"})
 		if err != nil {
-			fmt.Println("Error writing to client")
 			return
 		}
 
