@@ -15,6 +15,33 @@ func main() {
 		return
 	}
 
+	fmt.Println("redis clone server running and waiting for connections")
+
+	aof, err := NewAof("database.aof")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = aof.Read(func(value Value) {
+		command := strings.ToUpper(value.array[0].bulk)
+		args := value.array[1:]
+
+		handler, ok := Handlers[command]
+
+		if !ok {
+			fmt.Println("Invalid command:", command)
+
+		}
+
+		_ = handler(args)
+
+	})
+
+	if err != nil {
+		return
+	}
+
 	//Listen for connection
 	conn, err := l.Accept()
 	if err != nil {
@@ -62,6 +89,13 @@ func main() {
 				return
 			}
 			continue
+		}
+
+		if command == "SET" {
+			err := aof.Write(value)
+			if err != nil {
+				return
+			}
 		}
 
 		result := handler(args)
